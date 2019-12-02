@@ -1,6 +1,2 @@
-[package]
-name = "aoc-2018"
-version = "0.1.0"
-authors = ["Dirkjan Ochtman <dirkjan@ochtman.nl>"]
-
-[dependencies]
+[workspace]
+members = ["2018"]
