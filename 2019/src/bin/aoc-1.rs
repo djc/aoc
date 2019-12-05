@@ -4,7 +4,8 @@ use std::str::FromStr;
 
 fn main() -> std::io::Result<()> {
     let f = BufReader::new(File::open("input/1")?);
-    let modules = f.lines()
+    let modules = f
+        .lines()
         .map(|ln| recursive_fuel(fuel(u64::from_str(&ln.unwrap()).unwrap())))
         .sum::<u64>();
     println!("fuel required for modules: {}", modules);
