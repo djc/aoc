@@ -7,6 +7,7 @@ pub struct State {
     pub data: Vec<isize>,
     pub pc: usize,
     pub input: VecDeque<isize>,
+    pub output: Vec<isize>,
 }
 
 impl State {
@@ -15,6 +16,7 @@ impl State {
             data,
             pc: 0,
             input: VecDeque::new(),
+            output: Vec::new(),
         }
     }
 
@@ -53,7 +55,7 @@ impl State {
                     self.pc += 2;
                 }
                 4 => {
-                    println!("output: {}", self.operand(modes, 1));
+                    self.output.push(self.operand(modes, 1));
                     self.pc += 2;
                 }
                 99 => return,
@@ -98,6 +100,11 @@ mod tests {
 
     #[test]
     fn day_5() {
+        let mut state = State::new(vec![3, 0, 4, 0, 99]);
+        state.input.push_back(4);
+        state.run();
+        assert_eq!(state.output, vec![4]);
+
         let mut state = State::new(vec![1002, 4, 3, 4, 33]);
         state.run();
         assert_eq!(state.data, vec![1002, 4, 3, 4, 99]);
