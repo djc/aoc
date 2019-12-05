@@ -9,7 +9,7 @@ fn main() -> std::io::Result<()> {
         .split(',')
         .map(|s| isize::from_str(s).unwrap())
         .collect::<Vec<_>>();
-    let initial = State { data, pc: 0 };
+    let initial = State::new(data);
 
     let mut solved = None;
     for noun in 0..=99 {
