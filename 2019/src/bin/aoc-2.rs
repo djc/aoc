@@ -7,7 +7,7 @@ fn main() -> std::io::Result<()> {
     let data = read_to_string("input/2")?
         .trim()
         .split(',')
-        .map(|s| usize::from_str(s).unwrap())
+        .map(|s| isize::from_str(s).unwrap())
         .collect::<Vec<_>>();
     let initial = State { data };
 

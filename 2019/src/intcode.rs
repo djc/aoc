@@ -1,6 +1,6 @@
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct State {
-    pub data: Vec<usize>,
+    pub data: Vec<isize>,
 }
 
 impl State {
@@ -8,21 +8,21 @@ impl State {
         loop {
             match self.data.get(pos) {
                 Some(1) => {
-                    let left_addr = *self.data.get(pos + 1).unwrap();
+                    let left_addr = *self.data.get(pos + 1).unwrap() as usize;
                     let left = *self.data.get(left_addr).unwrap();
-                    let right_addr = *self.data.get(pos + 2).unwrap();
+                    let right_addr = *self.data.get(pos + 2).unwrap() as usize;
                     let right = *self.data.get(right_addr).unwrap();
-                    let dst_addr = *self.data.get(pos + 3).unwrap();
+                    let dst_addr = *self.data.get(pos + 3).unwrap() as usize;
                     let dst = self.data.get_mut(dst_addr).unwrap();
                     *dst = left + right;
                     pos += 4;
                 }
                 Some(2) => {
-                    let left_addr = *self.data.get(pos + 1).unwrap();
+                    let left_addr = *self.data.get(pos + 1).unwrap() as usize;
                     let left = *self.data.get(left_addr).unwrap();
-                    let right_addr = *self.data.get(pos + 2).unwrap();
+                    let right_addr = *self.data.get(pos + 2).unwrap() as usize;
                     let right = *self.data.get(right_addr).unwrap();
-                    let dst_addr = *self.data.get(pos + 3).unwrap();
+                    let dst_addr = *self.data.get(pos + 3).unwrap() as usize;
                     let dst = self.data.get_mut(dst_addr).unwrap();
                     *dst = left * right;
                     pos += 4;
