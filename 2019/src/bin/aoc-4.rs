@@ -42,7 +42,7 @@ mod tests {
 
     #[test]
     fn basic() {
-        assert!(validate(111111));
+        assert!(!validate(111111));
         assert!(!validate(223450));
         assert!(!validate(123789));
         assert!(validate(345578));
