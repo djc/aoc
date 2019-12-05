@@ -20,7 +20,7 @@ fn main() -> std::io::Result<()> {
             if state.data[0] == 19690720 {
                 println!("solved with {} {}", noun, verb);
                 solved = Some((noun, verb));
-                break
+                break;
             }
         }
     }
