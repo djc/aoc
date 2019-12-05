@@ -9,7 +9,7 @@ fn main() -> std::io::Result<()> {
         .split(',')
         .map(|s| isize::from_str(s).unwrap())
         .collect::<Vec<_>>();
-    let initial = State { data };
+    let initial = State { data, pc: 0 };
 
     let mut solved = None;
     for noun in 0..=99 {
@@ -17,7 +17,7 @@ fn main() -> std::io::Result<()> {
             let mut state = initial.clone();
             state.data[1] = noun;
             state.data[2] = verb;
-            state.run(0);
+            state.run();
             //println!("{} {} => {}", noun, verb, state.data[0]);
             if state.data[0] == 19690720 {
                 println!("solved with {} {}", noun, verb);
