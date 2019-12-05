@@ -1,4 +1,6 @@
 use std::collections::VecDeque;
+use std::fs::read_to_string;
+use std::str::FromStr;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct State {
@@ -14,6 +16,16 @@ impl State {
             pc: 0,
             input: VecDeque::new(),
         }
+    }
+
+    pub fn from_file(name: &str) -> Self {
+        let data = read_to_string(name)
+            .unwrap()
+            .trim()
+            .split(',')
+            .map(|s| isize::from_str(s).unwrap())
+            .collect::<Vec<_>>();
+        Self::new(data)
     }
 
     pub fn run(&mut self) {

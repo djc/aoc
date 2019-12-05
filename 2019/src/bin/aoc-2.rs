@@ -1,15 +1,7 @@
-use std::fs::read_to_string;
-use std::str::FromStr;
-
 use aoc_2019::intcode::State;
 
 fn main() -> std::io::Result<()> {
-    let data = read_to_string("input/2")?
-        .trim()
-        .split(',')
-        .map(|s| isize::from_str(s).unwrap())
-        .collect::<Vec<_>>();
-    let initial = State::new(data);
+    let initial = State::from_file("input/2");
 
     let mut solved = None;
     for noun in 0..=99 {
