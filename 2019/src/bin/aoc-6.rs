@@ -19,35 +19,27 @@ fn main() -> std::io::Result<()> {
         orbited.entry(src).or_insert_with(|| Vec::new()).push(dst);
     }
 
-    let mut roots = Vec::new();
-    for obj in orbited.keys() {
-        if !orbits.contains_key(obj) {
-            roots.push(*obj);
-        }
-    }
-    println!("roots {:?}", roots);
-
-    let mut total = 0;
-    let (mut rank, mut objects) = (1, Vec::new());
-    while !orbited.is_empty() {
-        println!("rank {}", rank);
-        for cur in roots.drain(..) {
-            println!("cur {}", cur);
-            let children = match orbited.remove(cur) {
-                Some(x) => x,
-                None => continue,
-            };
-
-            for orbiting in children {
-                total += rank;
-                objects.push(orbiting);
-            }
-        }
-
-        rank += 1;
-        mem::swap(&mut objects, &mut roots);
+    let me = dbg!(path("YOU", &orbits));
+    let santa = dbg!(path("SAN", &orbits));
+    let mut common = 0;
+    while me[me.len() - common - 1] == santa[santa.len() - common - 1] {
+        common += 1;
     }
 
-    println!("total {:?}", total);
+    println!("common {}", common);
+    println!("me {}", me.len());
+    println!("santa {}", santa.len());
+    println!(
+        "transfers {}",
+        me.len() - common - 1 + santa.len() - common - 1
+    );
     Ok(())
+}
+
+fn path<'a>(dst: &'a str, orbits: &HashMap<&'a str, &'a str>) -> Vec<&'a str> {
+    let mut path = vec![dst];
+    while path.last().unwrap() != &"COM" {
+        path.push(orbits.get(path.last().unwrap()).unwrap());
+    }
+    path
 }
