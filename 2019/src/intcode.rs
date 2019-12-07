@@ -31,7 +31,7 @@ impl State {
         Self::new(data)
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Status {
         loop {
             let instr = self.data[self.pc];
             let (modes, instr) = (instr / 100, instr % 100);
@@ -52,6 +52,9 @@ impl State {
                 }
                 3 => {
                     let dst_addr = self.data[self.pc + 1] as usize;
+                    if self.input.is_empty() {
+                        return Status::NeedInput;
+                    }
                     self.data[dst_addr] = self.input.pop_front().unwrap();
                     self.pc += 2;
                 }
@@ -93,7 +96,7 @@ impl State {
                     self.data[dst_addr] = val;
                     self.pc += 4;
                 }
-                99 => return,
+                99 => return Status::Done,
                 v => panic!("invalid instruction {:?} at {}", v, self.pc),
             }
         }
@@ -108,6 +111,12 @@ impl State {
             m => panic!("unknown mode {}", m),
         }
     }
+}
+
+#[derive(Eq, PartialEq)]
+pub enum Status {
+    NeedInput,
+    Done,
 }
 
 #[cfg(test)]
