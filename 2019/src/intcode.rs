@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::convert::TryInto;
 use std::fs::read_to_string;
 use std::str::FromStr;
 
@@ -58,6 +59,40 @@ impl State {
                     self.output.push(self.operand(modes, 1));
                     self.pc += 2;
                 }
+                5 => {
+                    let a1 = self.operand(modes, 1);
+                    let a2 = self.operand(modes, 2);
+                    if a1 > 0 {
+                        self.pc = a2.try_into().unwrap();
+                    } else {
+                        self.pc += 3;
+                    }
+                }
+                6 => {
+                    let a1 = self.operand(modes, 1);
+                    let a2 = self.operand(modes, 2);
+                    if a1 == 0 {
+                        self.pc = a2.try_into().unwrap();
+                    } else {
+                        self.pc += 3;
+                    }
+                }
+                7 => {
+                    let a1 = self.operand(modes, 1);
+                    let a2 = self.operand(modes, 2);
+                    let dst_addr = self.data[self.pc + 3] as usize;
+                    let val = if a1 < a2 { 1 } else { 0 };
+                    self.data[dst_addr] = val;
+                    self.pc += 4;
+                }
+                8 => {
+                    let a1 = self.operand(modes, 1);
+                    let a2 = self.operand(modes, 2);
+                    let dst_addr = self.data[self.pc + 3] as usize;
+                    let val = if a1 == a2 { 1 } else { 0 };
+                    self.data[dst_addr] = val;
+                    self.pc += 4;
+                }
                 99 => return,
                 v => panic!("invalid instruction {:?} at {}", v, self.pc),
             }
@@ -108,5 +143,25 @@ mod tests {
         let mut state = State::new(vec![1002, 4, 3, 4, 33]);
         state.run();
         assert_eq!(state.data, vec![1002, 4, 3, 4, 99]);
+
+        let mut state = State::new(vec![3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]);
+        state.input.push_back(4);
+        state.run();
+        assert_eq!(state.output, vec![0]);
+
+        let mut state = State::new(vec![3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]);
+        state.input.push_back(4);
+        state.run();
+        assert_eq!(state.output, vec![1]);
+
+        let mut state = State::new(vec![3, 3, 1108, -1, 8, 3, 4, 3, 99]);
+        state.input.push_back(8);
+        state.run();
+        assert_eq!(state.output, vec![1]);
+
+        let mut state = State::new(vec![3, 3, 1107, -1, 8, 3, 4, 3, 99]);
+        state.input.push_back(9);
+        state.run();
+        assert_eq!(state.output, vec![0]);
     }
 }
