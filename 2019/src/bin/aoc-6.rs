@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs::read_to_string;
-use std::mem;
 
 fn main() -> std::io::Result<()> {
     let raw = read_to_string("input/6")?;

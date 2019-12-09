@@ -7,6 +7,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn run(state: State) -> isize {
     let mut phases = [0isize, 1, 2, 3, 4];
     let mut max = 0;

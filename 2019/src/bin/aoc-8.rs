@@ -10,6 +10,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn part_1(raw: Vec<u32>) {
     let (mut fewest_zero, mut out) = (std::usize::MAX, 0);
     for i in 0..(raw.len() / 150) {
