@@ -9,6 +9,7 @@ pub struct State {
     pub pc: usize,
     pub input: VecDeque<isize>,
     pub output: Vec<isize>,
+    pub base: isize,
 }
 
 impl State {
@@ -18,6 +19,7 @@ impl State {
             pc: 0,
             input: VecDeque::new(),
             output: Vec::new(),
+            base: 0,
         }
     }
 
@@ -39,27 +41,27 @@ impl State {
                 1 => {
                     let a1 = self.operand(modes, 1);
                     let a2 = self.operand(modes, 2);
-                    let dst_addr = self.data[self.pc + 3] as usize;
-                    self.data[dst_addr] = a1 + a2;
+                    self.store(modes, 3, a1 + a2);
                     self.pc += 4;
                 }
                 2 => {
                     let a1 = self.operand(modes, 1);
                     let a2 = self.operand(modes, 2);
-                    let dst_addr = self.data[self.pc + 3] as usize;
-                    self.data[dst_addr] = a1 * a2;
+                    self.store(modes, 3, a1 * a2);
                     self.pc += 4;
                 }
                 3 => {
-                    let dst_addr = self.data[self.pc + 1] as usize;
                     if self.input.is_empty() {
                         return Status::NeedInput;
                     }
-                    self.data[dst_addr] = self.input.pop_front().unwrap();
+                    let val = self.input.pop_front().unwrap();
+                    assert!(instr < 100);
+                    self.store(modes, 1, val);
                     self.pc += 2;
                 }
                 4 => {
-                    self.output.push(self.operand(modes, 1));
+                    let value = self.operand(modes, 1);
+                    self.output.push(value);
                     self.pc += 2;
                 }
                 5 => {
@@ -83,18 +85,19 @@ impl State {
                 7 => {
                     let a1 = self.operand(modes, 1);
                     let a2 = self.operand(modes, 2);
-                    let dst_addr = self.data[self.pc + 3] as usize;
-                    let val = if a1 < a2 { 1 } else { 0 };
-                    self.data[dst_addr] = val;
+                    self.store(modes, 3, if a1 < a2 { 1 } else { 0 });
                     self.pc += 4;
                 }
                 8 => {
                     let a1 = self.operand(modes, 1);
                     let a2 = self.operand(modes, 2);
-                    let dst_addr = self.data[self.pc + 3] as usize;
-                    let val = if a1 == a2 { 1 } else { 0 };
-                    self.data[dst_addr] = val;
+                    self.store(modes, 3, if a1 == a2 { 1 } else { 0 });
                     self.pc += 4;
+                }
+                9 => {
+                    let a1 = self.operand(modes, 1);
+                    self.base += a1;
+                    self.pc += 2;
                 }
                 99 => return Status::Done,
                 v => panic!("invalid instruction {:?} at {}", v, self.pc),
@@ -102,18 +105,44 @@ impl State {
         }
     }
 
-    fn operand(&self, modes: isize, idx: usize) -> isize {
+    fn operand(&mut self, modes: isize, idx: usize) -> isize {
         let value = self.data[self.pc + idx];
-        let div = 10usize.pow(idx as u32 - 1);
-        match (modes as usize / div) % 10 {
-            0 => self.data[value as usize],
+        match self.mode(modes, idx) {
+            0 => self.get(value),
             1 => value,
+            2 => self.get(self.base + value),
             m => panic!("unknown mode {}", m),
         }
     }
+
+    fn store(&mut self, modes: isize, idx: usize, value: isize) {
+        let addr = self.data[self.pc + idx];
+        let addr = match self.mode(modes, idx) {
+            0 => addr,
+            2 => self.base + addr,
+            m => panic!("invalid store mode {}", m),
+        } as usize;
+
+        if addr > self.data.len() - 1 {
+            self.data.resize(addr + 1, 0);
+        }
+        self.data[addr] = value;
+    }
+
+    fn mode(&self, modes: isize, idx: usize) -> usize {
+        ((modes as usize) / 10usize.pow(idx as u32 - 1)) % 10
+    }
+
+    fn get(&mut self, addr: isize) -> isize {
+        let addr = addr as usize;
+        if addr > self.data.len() {
+            self.data.resize(addr + 1, 0);
+        }
+        self.data[addr]
+    }
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Status {
     NeedInput,
     Done,
@@ -172,5 +201,21 @@ mod tests {
         state.input.push_back(9);
         state.run();
         assert_eq!(state.output, vec![0]);
+    }
+
+    #[test]
+    fn day_9() {
+        let code = vec![109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99];
+        let mut state = State::new(code.clone());
+        state.run();
+        assert_eq!(state.output, code);
+
+        let mut state = State::new(vec![1102,34915192,34915192,7,4,7,99,0]);
+        state.run();
+        assert_eq!(state.output.pop().unwrap(), 1_219_070_632_396_864);
+
+        let mut state = State::new(vec![104,1125899906842624,99]);
+        state.run();
+        assert_eq!(state.output.pop().unwrap(), 1125899906842624);
     }
 }
