@@ -23,7 +23,7 @@ fn part_1(raw: Vec<u32>) {
             out = ones * twos;
         }
     }
-    
+
     println!("out {}", out);
 }
 
@@ -34,7 +34,11 @@ fn part_2(raw: Vec<u32>) {
     for row in 0..6 {
         for col in 0..25 {
             let i = row * 25 + col;
-            let p = layers.iter().map(|layer| layer[i]).find(|v| *v != 2).unwrap();
+            let p = layers
+                .iter()
+                .map(|layer| layer[i])
+                .find(|v| *v != 2)
+                .unwrap();
             print!("{}", p);
         }
         println!("");

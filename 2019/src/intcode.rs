@@ -205,16 +205,18 @@ mod tests {
 
     #[test]
     fn day_9() {
-        let code = vec![109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99];
+        let code = vec![
+            109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99,
+        ];
         let mut state = State::new(code.clone());
         state.run();
         assert_eq!(state.output, code);
 
-        let mut state = State::new(vec![1102,34915192,34915192,7,4,7,99,0]);
+        let mut state = State::new(vec![1102, 34915192, 34915192, 7, 4, 7, 99, 0]);
         state.run();
         assert_eq!(state.output.pop().unwrap(), 1_219_070_632_396_864);
 
-        let mut state = State::new(vec![104,1125899906842624,99]);
+        let mut state = State::new(vec![104, 1125899906842624, 99]);
         state.run();
         assert_eq!(state.output.pop().unwrap(), 1125899906842624);
     }
