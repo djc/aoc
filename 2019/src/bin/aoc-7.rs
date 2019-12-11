@@ -50,7 +50,7 @@ fn run2(state: State) -> isize {
             amp.input.push_back(out);
             let status = amp.run();
 
-            out = amp.output.pop().unwrap();
+            out = amp.output.pop_front().unwrap();
             if status == Status::Done && i == 4 {
                 break;
             }

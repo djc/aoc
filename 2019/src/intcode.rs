@@ -8,7 +8,7 @@ pub struct State {
     pub data: Vec<isize>,
     pub pc: usize,
     pub input: VecDeque<isize>,
-    pub output: Vec<isize>,
+    pub output: VecDeque<isize>,
     pub base: isize,
 }
 
@@ -18,7 +18,7 @@ impl State {
             data,
             pc: 0,
             input: VecDeque::new(),
-            output: Vec::new(),
+            output: VecDeque::new(),
             base: 0,
         }
     }
@@ -61,7 +61,7 @@ impl State {
                 }
                 4 => {
                     let value = self.operand(modes, 1);
-                    self.output.push(value);
+                    self.output.push_back(value);
                     self.pc += 2;
                 }
                 5 => {
@@ -214,10 +214,10 @@ mod tests {
 
         let mut state = State::new(vec![1102, 34915192, 34915192, 7, 4, 7, 99, 0]);
         state.run();
-        assert_eq!(state.output.pop().unwrap(), 1_219_070_632_396_864);
+        assert_eq!(state.output.pop_front().unwrap(), 1_219_070_632_396_864);
 
         let mut state = State::new(vec![104, 1125899906842624, 99]);
         state.run();
-        assert_eq!(state.output.pop().unwrap(), 1125899906842624);
+        assert_eq!(state.output.pop_front().unwrap(), 1125899906842624);
     }
 }
